@@ -13,16 +13,13 @@ public class Config {
     private static final Logger LOGGER = LogManager.getLogger();
     private static Properties properties = new Properties();
 
-    static {
-        loadConfig();
-    }
-
-    public static Properties getConfig() {
+    public static Properties getConfig(String configFile) {
+        loadConfig(configFile);
         return properties;
     }
 
-    private static void loadConfig() {
-        try (InputStream configFile = Config.class.getClassLoader().getResourceAsStream("db.properties")) {
+    private static void loadConfig(String filename) {
+        try (InputStream configFile = Config.class.getClassLoader().getResourceAsStream(filename)) {
             properties.load(configFile);
             LOGGER.info("Config loaded.");
             LOGGER.info("JDBC url is: " + properties.getProperty("jdbc.url"));

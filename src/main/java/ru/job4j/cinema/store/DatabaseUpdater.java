@@ -10,8 +10,8 @@ public class DatabaseUpdater {
     private static final Logger LOGGER = LogManager.getLogger();
     private Properties config;
 
-    public DatabaseUpdater() {
-        this.config = Config.getConfig();
+    public DatabaseUpdater(String filename) {
+        this.config = Config.getConfig(filename);
     }
 
     public void updateDatabase() {
