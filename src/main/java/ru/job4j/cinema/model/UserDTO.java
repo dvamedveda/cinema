@@ -6,20 +6,17 @@ public class UserDTO {
     private int id;
     private String name;
     private String telNumber;
-    private int reservedPlace;
 
     public UserDTO() {
         this.id = 0;
         this.name = "";
         this.telNumber = "";
-        this.reservedPlace = 0;
     }
 
-    public UserDTO(String name, String telNumber, int reservedPlace) {
+    public UserDTO(String name, String telNumber) {
         this.id = 0;
         this.name = name;
         this.telNumber = telNumber;
-        this.reservedPlace = reservedPlace;
     }
 
     public int getId() {
@@ -46,14 +43,6 @@ public class UserDTO {
         this.telNumber = telNumber;
     }
 
-    public int getReservedPlace() {
-        return reservedPlace;
-    }
-
-    public void setReservedPlace(int reservedPlace) {
-        this.reservedPlace = reservedPlace;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -64,13 +53,12 @@ public class UserDTO {
         }
         UserDTO userDTO = (UserDTO) o;
         return id == userDTO.id
-                && reservedPlace == userDTO.reservedPlace
                 && Objects.equals(name, userDTO.name)
                 && Objects.equals(telNumber, userDTO.telNumber);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, telNumber, reservedPlace);
+        return Objects.hash(id, name, telNumber);
     }
 }
