@@ -12,7 +12,7 @@ public class HallDTO {
     }
 
     public void updatePlace(Place place) {
-        this.placeList[place.getX()][place.getY()] = place;
+        this.placeList[place.getX() - 1][place.getY() - 1] = place;
 
     }
 

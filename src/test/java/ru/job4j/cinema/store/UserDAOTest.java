@@ -4,19 +4,20 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.job4j.cinema.model.UserDTO;
+import ru.job4j.cinema.service.ServiceSettings;
 
 import static org.hamcrest.CoreMatchers.is;
 
 public class UserDAOTest {
     @BeforeClass
     public static void setUp() {
-        DatabaseUpdater updater = new DatabaseUpdater("test_db.properties");
+        DatabaseUpdater updater = new DatabaseUpdater(ServiceSettings.TEST_DB_FILE);
         updater.updateDatabase();
     }
 
     @Test
     public void whenGetExistUserThenSuccess() {
-        UserDAO userDAO = new UserDAO(PgStore.getInst("test_db.properties"));
+        UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));
         UserDTO user = userDAO.getUser("default_tel");
         Assert.assertThat(user.getId(), is(0));
         Assert.assertThat(user.getName(), is("default_user"));
@@ -25,14 +26,14 @@ public class UserDAOTest {
 
     @Test
     public void whenGetUnexistUserThenNull() {
-        UserDAO userDAO = new UserDAO(PgStore.getInst("test_db.properties"));
+        UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));
         UserDTO user = userDAO.getUser("default_tel111");
         Assert.assertNull(user);
     }
 
     @Test
     public void whenCreateUserThenSuccess() {
-        UserDAO userDAO = new UserDAO(PgStore.getInst("test_db.properties"));
+        UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));
         UserDTO expected = userDAO.saveUser(new UserDTO("some_name", "some_tel"));
         UserDTO result = userDAO.getUser("some_tel");
         Assert.assertThat(result.getId(), is(expected.getId()));
@@ -43,7 +44,7 @@ public class UserDAOTest {
 
     @Test
     public void whenUpdateUserThenSuccess() {
-        UserDAO userDAO = new UserDAO(PgStore.getInst("test_db.properties"));
+        UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));
         UserDTO user = userDAO.saveUser(new UserDTO("some_name", "some_tel"));
         user.setName("other_name");
         userDAO.saveUser(user);
