@@ -31,6 +31,8 @@ public class HallDAO {
                         Place nextPlace = new Place(x, y);
                         boolean isReserved = resultSet.getBoolean("reserved");
                         nextPlace.setReserved(isReserved);
+                        int reservedBy = resultSet.getInt("reserved_by");
+                        nextPlace.setReservedBy(reservedBy);
                         array[x - 1][y - 1] = nextPlace;
                     }
                 }

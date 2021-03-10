@@ -9,9 +9,6 @@ import ru.job4j.cinema.model.Place;
 import ru.job4j.cinema.store.HallDAO;
 import ru.job4j.cinema.store.PgStore;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class HallService {
     private static final Logger LOGGER = LogManager.getLogger();
     private final HallDAO hallDAO;
@@ -83,15 +80,9 @@ public class HallService {
     public String getPlacesAsJson() {
         ObjectMapper mapper = new ObjectMapper();
         String result = "";
-        List<Place> placesAsList = new ArrayList<>();
         Place[][] placeList = places.getPlaceList();
-        for (int i = 0; i < placeList.length; i++) {
-            for (int j = 0; j < placeList[0].length; j++) {
-                placesAsList.add(placeList[i][j]);
-            }
-        }
         try {
-            result = mapper.writeValueAsString(placesAsList);
+            result = mapper.writeValueAsString(placeList);
         } catch (JsonProcessingException e) {
             LOGGER.warn(e, e);
         }
