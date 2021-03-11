@@ -9,6 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class HallDAO {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -48,17 +51,25 @@ public class HallDAO {
         String command = "update hall set reserved = ?, reserved_by = ? where row = ? and col = ?;";
         try (Connection connection = store.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(command)) {
-                Place[][] places = hall.getPlaceList();
-                int maxX = places.length;
-                int maxY = places[0].length;
-                for (int row = 0; row < maxX; row++) {
-                    for (int col = 0; col < maxY; col++) {
-                        statement.setBoolean(1, places[row][col].isReserved());
-                        statement.setInt(2, places[row][col].getReservedBy());
-                        statement.setInt(3, places[row][col].getX());
-                        statement.setInt(4, places[row][col].getY());
-                        statement.addBatch();
-                    }
+//                Place[][] places = hall.getPlaceArray();
+//                int maxX = places.length;
+//                int maxY = places[0].length;
+//                for (int row = 0; row < maxX; row++) {
+//                    for (int col = 0; col < maxY; col++) {
+//                        statement.setBoolean(1, places[row][col].isReserved());
+//                        statement.setInt(2, places[row][col].getReservedBy());
+//                        statement.setInt(3, places[row][col].getX());
+//                        statement.setInt(4, places[row][col].getY());
+//                        statement.addBatch();
+//                    }
+//                }
+                List<Place> placeList = Arrays.stream(hall.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
+                for (Place next : placeList) {
+                    statement.setBoolean(1, next.isReserved());
+                    statement.setInt(2, next.getReservedBy());
+                    statement.setInt(3, next.getX());
+                    statement.setInt(4, next.getY());
+                    statement.addBatch();
                 }
                 statement.executeBatch();
             }

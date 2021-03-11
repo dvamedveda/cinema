@@ -27,7 +27,7 @@ public class HallDAOTest {
         Store store = PgStore.getInst(ServiceSettings.TEST_DB_FILE);
         HallDAO hallDAO = new HallDAO(store);
         HallDTO hallDTO = hallDAO.getPlaces();
-        Place[][] places = hallDTO.getPlaceList();
+        Place[][] places = hallDTO.getPlaceArray();
         for (int row = 0; row < places.length; row++) {
             for (int col = 0; col < places[0].length; col++) {
                 Assert.assertFalse(places[row][col].isReserved());
@@ -45,7 +45,7 @@ public class HallDAOTest {
         hallDTO.updatePlace(reservedPlace);
         hallDAO.savePlaces(hallDTO);
         HallDTO result = hallDAO.getPlaces();
-        Place[][] places = result.getPlaceList();
+        Place[][] places = result.getPlaceArray();
         for (int row = 0; row < places.length; row++) {
             for (int col = 0; col < places[0].length; col++) {
                 if (row == 0 && col == 0) {
@@ -59,7 +59,7 @@ public class HallDAOTest {
         hallDTO.updatePlace(reservedPlace);
         hallDAO.savePlaces(hallDTO);
         HallDTO rolledPlaceList = hallDAO.getPlaces();
-        Place[][] rolledPlaces = rolledPlaceList.getPlaceList();
+        Place[][] rolledPlaces = rolledPlaceList.getPlaceArray();
         for (int row = 0; row < rolledPlaces.length; row++) {
             for (int col = 0; col < rolledPlaces[0].length; col++) {
                 Assert.assertFalse(rolledPlaces[row][col].isReserved());

@@ -15,6 +15,7 @@ import java.util.Enumeration;
 import java.util.Map;
 
 public class PaymentServlet extends HttpServlet {
+    private static UserService service = new UserService(ServiceSettings.DB_FILE);
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
@@ -29,7 +30,6 @@ public class PaymentServlet extends HttpServlet {
         String tel = req.getParameter("phone");
         int x = Integer.parseInt(req.getParameter("placex"));
         int y = Integer.parseInt(req.getParameter("placey"));
-        UserService service = new UserService(ServiceSettings.DB_FILE);
         if (service.doPayment(name, tel, x, y)) {
             LOGGER.info("Reserving place " + y + " in row " + x + " by user " + name + " with tel. number " + tel + ": SUCCESS");
             resp.sendRedirect("index.do");

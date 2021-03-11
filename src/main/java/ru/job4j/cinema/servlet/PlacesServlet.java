@@ -12,14 +12,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class PlacesServlet extends HttpServlet {
-
+    private static HallService service = new HallService(ServiceSettings.DB_FILE);
     private static final Logger LOGGER = LogManager.getLogger();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         resp.setContentType("text/json");
         resp.setCharacterEncoding("UTF-8");
-        HallService service = new HallService(ServiceSettings.DB_FILE);
         String placesAsJson = service.getPlacesAsJson();
         try (PrintWriter out = resp.getWriter()) {
             out.println(placesAsJson);

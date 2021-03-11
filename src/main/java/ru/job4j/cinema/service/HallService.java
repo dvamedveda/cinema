@@ -9,6 +9,10 @@ import ru.job4j.cinema.model.Place;
 import ru.job4j.cinema.store.HallDAO;
 import ru.job4j.cinema.store.PgStore;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class HallService {
     private static final Logger LOGGER = LogManager.getLogger();
     private final HallDAO hallDAO;
@@ -63,16 +67,14 @@ public class HallService {
     }
 
     public void unreservePlaces(int id) {
-        Place[][] placeList = places.getPlaceList();
-        for (int x = 0; x < placeList.length; x++) {
-            for (int y = 0; y < placeList[0].length; y++) {
-                Place next = places.getPlace(x, y);
-                if (next.getReservedBy() == id) {
-                    next.setReservedBy(0);
-                    next.setReserved(false);
-                    places.updatePlace(next);
+        List<Place> placeList = Arrays.stream(places.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
+        for (Place next : placeList) {
+            Place current = places.getPlace(next.getX() - 1, next.getY() - 1);
+            if (current.getReservedBy() == id) {
+                    current.setReservedBy(0);
+                    current.setReserved(false);
+                    places.updatePlace(current);
                 }
-            }
         }
         hallDAO.savePlaces(places);
     }
@@ -80,7 +82,7 @@ public class HallService {
     public String getPlacesAsJson() {
         ObjectMapper mapper = new ObjectMapper();
         String result = "";
-        Place[][] placeList = places.getPlaceList();
+        Place[][] placeList = places.getPlaceArray();
         try {
             result = mapper.writeValueAsString(placeList);
         } catch (JsonProcessingException e) {

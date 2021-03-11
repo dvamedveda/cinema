@@ -16,7 +16,7 @@ public class HallDTO {
 
     }
 
-    public Place[][] getPlaceList() {
+    public Place[][] getPlaceArray() {
         return this.placeList;
     }
 }
