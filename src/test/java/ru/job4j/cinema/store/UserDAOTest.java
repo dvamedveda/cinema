@@ -8,13 +8,23 @@ import ru.job4j.cinema.service.ServiceSettings;
 
 import static org.hamcrest.CoreMatchers.is;
 
+/**
+ * Тесты класса для работы с пользователем персистентного слоя.
+ */
 public class UserDAOTest {
+
+    /**
+     * Подготовка базы данных для тестов.
+     */
     @BeforeClass
     public static void setUp() {
         DatabaseUpdater updater = new DatabaseUpdater(ServiceSettings.TEST_DB_FILE);
         updater.updateDatabase();
     }
 
+    /**
+     * Проверка получения существующего пользователя.
+     */
     @Test
     public void whenGetExistUserThenSuccess() {
         UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));
@@ -24,6 +34,9 @@ public class UserDAOTest {
         Assert.assertThat(user.getTelNumber(), is("default_tel"));
     }
 
+    /**
+     * Проверка получения несуществующего пользователя.
+     */
     @Test
     public void whenGetUnexistUserThenNull() {
         UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));
@@ -31,6 +44,9 @@ public class UserDAOTest {
         Assert.assertNull(user);
     }
 
+    /**
+     * Проверка создания нового пользователя.
+     */
     @Test
     public void whenCreateUserThenSuccess() {
         UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));
@@ -42,6 +58,9 @@ public class UserDAOTest {
         userDAO.deleteUser(expected.getId());
     }
 
+    /**
+     * Проверка обновления данных о пользователе.
+     */
     @Test
     public void whenUpdateUserThenSuccess() {
         UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));

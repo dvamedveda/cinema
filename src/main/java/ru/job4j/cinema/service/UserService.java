@@ -4,15 +4,39 @@ import ru.job4j.cinema.model.UserDTO;
 import ru.job4j.cinema.store.PgStore;
 import ru.job4j.cinema.store.UserDAO;
 
+/**
+ * Сервисный класс для работы с пользователем кинотеатра.
+ */
 public class UserService {
+
+    /**
+     * Объект персистентного слоя для сохранения и получения данных о пользователе.
+     */
     private final UserDAO userDAO;
+
+    /**
+     * Объект сервисного слоя для работы с кинозалом.
+     */
     private final HallService hallService;
 
+    /**
+     * Инициализация сервисного класса.
+     *
+     * @param config конфиг используемой базы данных.
+     */
     public UserService(String config) {
         userDAO = new UserDAO(PgStore.getInst(config));
         hallService = new HallService(config);
     }
 
+    /**
+     * Получить объект пользователя по имени и телефону.
+     * Если такого пользователя не существует, он будет создан.
+     *
+     * @param name имя пользователя.
+     * @param tel  телефон пользователя.
+     * @return объект пользователя.
+     */
     public UserDTO prepareUser(String name, String tel) {
         UserDTO result;
         if (userDAO.getUser(tel) != null) {
@@ -23,9 +47,18 @@ public class UserService {
         return result;
     }
 
+    /**
+     * Выполнить бронирование места за пользователем.
+     *
+     * @param name имя пользователя.
+     * @param tel  телефон пользователя.
+     * @param x    ряд в кинозале.
+     * @param y    место в ряду в кинозале.
+     * @return результат бронирования.
+     */
     public boolean doPayment(String name, String tel, int x, int y) {
         boolean result = false;
-        if (!hallService.isChecked(x, y) && !hallService.isReserved(x, y)) {
+        if (!hallService.isReserved(x, y)) {
             UserDTO user = prepareUser(name, tel);
             if (hallService.reservePlace(x, y, user.getId())) {
                 result = true;
@@ -34,6 +67,13 @@ public class UserService {
         return result;
     }
 
+    /**
+     * Удалить пользователя.
+     * При удалении выполняется разбронирование мест пользователя.
+     *
+     * @param tel номер телефона пользователя.
+     * @return результат удаления.
+     */
     public boolean removeUser(String tel) {
         boolean result = false;
         if (userDAO.getUser(tel) != null) {

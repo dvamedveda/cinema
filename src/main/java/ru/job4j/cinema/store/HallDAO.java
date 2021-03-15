@@ -13,14 +13,35 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Класс, реализующий взаимодействия приложения с кинозалом в базе данных.
+ */
 public class HallDAO {
+
+    /**
+     * Логгер для вывода информации о работе приложения.
+     */
     private static final Logger LOGGER = LogManager.getLogger();
+
+    /**
+     * Объект хранилища.
+     */
     private Store store;
 
+    /**
+     * Инициализация класса выбранным хранилищем.
+     *
+     * @param store объект хранилища.
+     */
     public HallDAO(Store store) {
         this.store = store;
     }
 
+    /**
+     * Загрузить из базы данных состояние всех мест в кинозале.
+     *
+     * @return модель данных кинозала.
+     */
     public HallDTO getPlaces() {
         Place[][] array = new Place[this.getMaxRow()][this.getMaxCol()];
         String command = "select * from hall;";
@@ -47,22 +68,15 @@ public class HallDAO {
         return new HallDTO(array);
     }
 
+    /**
+     * Сохранить в базу данных состояние всех мест в кинозале.
+     *
+     * @param hall модель данных кинозала.
+     */
     public void savePlaces(HallDTO hall) {
         String command = "update hall set reserved = ?, reserved_by = ? where row = ? and col = ?;";
         try (Connection connection = store.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(command)) {
-//                Place[][] places = hall.getPlaceArray();
-//                int maxX = places.length;
-//                int maxY = places[0].length;
-//                for (int row = 0; row < maxX; row++) {
-//                    for (int col = 0; col < maxY; col++) {
-//                        statement.setBoolean(1, places[row][col].isReserved());
-//                        statement.setInt(2, places[row][col].getReservedBy());
-//                        statement.setInt(3, places[row][col].getX());
-//                        statement.setInt(4, places[row][col].getY());
-//                        statement.addBatch();
-//                    }
-//                }
                 List<Place> placeList = Arrays.stream(hall.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
                 for (Place next : placeList) {
                     statement.setBoolean(1, next.isReserved());
@@ -78,6 +92,11 @@ public class HallDAO {
         }
     }
 
+    /**
+     * Проверить, есть ли в кинозале свободные места.
+     *
+     * @return да или нет.
+     */
     public boolean isHaveSpaces() {
         String command = "select * from hall where reserved = false;";
         boolean result = false;
@@ -96,6 +115,11 @@ public class HallDAO {
         return result;
     }
 
+    /**
+     * Вспомогательный метод для определения количества рядов в кинозале.
+     *
+     * @return количество рядов.
+     */
     private int getMaxRow() {
         int result = 0;
         String getMaxRow = "select max(\"row\") from hall;";
@@ -115,6 +139,11 @@ public class HallDAO {
         return result;
     }
 
+    /**
+     * Вспомогательный метод для определения количества мест в ряду в кинозале.
+     *
+     * @return количество мест.
+     */
     private int getMaxCol() {
         int result = 0;
         String getMaxCol = "select max(\"col\") from hall;";

@@ -6,14 +6,36 @@ import ru.job4j.cinema.model.UserDTO;
 
 import java.sql.*;
 
+/**
+ * Класс для взаимодействия с пользователями в базе данных.
+ */
 public class UserDAO {
+
+    /**
+     * Логгер для вывода информации о работе приложения.
+     */
     private static final Logger LOGGER = LogManager.getLogger();
+
+    /**
+     * Объект хранилища.
+     */
     private Store store;
 
+    /**
+     * Инициализация класса объектом хранилища.
+     *
+     * @param store объект хранилища.
+     */
     public UserDAO(Store store) {
         this.store = store;
     }
 
+    /**
+     * Получить пользователя по номеру телефона.
+     *
+     * @param number номер телефона.
+     * @return объект пользователя или null
+     */
     public UserDTO getUser(String number) {
         UserDTO result = null;
         String command = "select * from account where tel_number = ?";
@@ -37,6 +59,12 @@ public class UserDAO {
         return result;
     }
 
+    /**
+     * Сохранить или обновить пользователя в базе данных.
+     *
+     * @param user модель данных пользователя.
+     * @return объект сохраненного пользователя.
+     */
     public UserDTO saveUser(UserDTO user) {
         if (this.getUser(user.getTelNumber()) != null) {
             return this.updateUser(user);
@@ -45,6 +73,12 @@ public class UserDAO {
         }
     }
 
+    /**
+     * Обновление существующего пользователя в базе данных.
+     *
+     * @param user объект пользователя.
+     * @return объект сохраненного пользователя.
+     */
     private UserDTO updateUser(UserDTO user) {
         String command = "update account set name = ?, tel_number = ? where id = ?";
         try (Connection connection = this.store.getConnection()) {
@@ -60,6 +94,12 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Сохранение нового пользователя в базе данных.
+     *
+     * @param user объект пользователя.
+     * @return объект сохраненного пользователя с новым индентификатором.
+     */
     private UserDTO saveNewUser(UserDTO user) {
         String command = "insert into account(name, tel_number) values (?, ?)";
         try (Connection connection = this.store.getConnection()) {
@@ -79,6 +119,11 @@ public class UserDAO {
         return user;
     }
 
+    /**
+     * Удалить пользователя из базы данных.
+     *
+     * @param id идентификатор пользователя.
+     */
     public void deleteUser(int id) {
         String command = "delete from account where id = ?";
         try (Connection connection = this.store.getConnection()) {

@@ -1,12 +1,23 @@
+/**
+ * Координаты выбранного для бронирования места.
+ */
 let x, y;
+
 $(document).ready(setPlace);
 $(document).ready(showHeader);
 
+/**
+ * Показ заголовка с выбранным для бронирования местом.
+ */
 function showHeader() {
     let header = `Вы выбрали место ${y} в ряду ${x}, Сумма : 500 рублей.`;
     $("#payment_header").append(header);
 }
 
+/**
+ * Установка координат, полученных из строки запроса,
+ * после перехада на страницу оплаты.
+ */
 function setPlace() {
     let place = getURLParameter('place');
     let coords = place.split("");
@@ -16,6 +27,11 @@ function setPlace() {
     $("#placey").attr("value", y - 1);
 }
 
+/**
+ * Вспомогательная функция для получения значения параметра из строки запроса.
+ * @param sParam имя параметра.
+ * @returns {boolean|*} значение параметра.
+ */
 function getURLParameter(sParam) {
     let sPageURL = window.location.search.substring(1);
     let sURLVariables = sPageURL.split('&');
@@ -28,6 +44,9 @@ function getURLParameter(sParam) {
     return false;
 }
 
+/**
+ * Запуск валидации данных, введенных пользователем.
+ */
 $("#payment_submit").click(
     function (event) {
         if (!validatePayment()) {
@@ -38,6 +57,9 @@ $("#payment_submit").click(
     }
 );
 
+/**
+ * Валидация данных, введенных пользователем и показ ошибок, если валидация не прошла.
+ */
 function validatePayment() {
     if ($("#username").val() == "") {
         if (!$.contains(document.querySelector('#name_input'), document.querySelector('#name_input > .alert'))) {

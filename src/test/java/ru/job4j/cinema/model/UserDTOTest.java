@@ -5,7 +5,14 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 
+/**
+ * Тесты модели пользователя.
+ */
 public class UserDTOTest {
+
+    /**
+     * Корректное создание модели пользователя.
+     */
     @Test
     public void whenCreateUserDtoThenCorrect() {
         UserDTO userOne = new UserDTO();
@@ -24,6 +31,9 @@ public class UserDTOTest {
         Assert.assertThat(userTwo.getTelNumber(), is("some_tel"));
     }
 
+    /**
+     * Проверка сравнения равных пользователей.
+     */
     @Test
     public void whenTwoSimilarThenEquals() {
         UserDTO userOne = new UserDTO("some_name", "some_tel");
@@ -33,6 +43,9 @@ public class UserDTOTest {
         Assert.assertEquals(userOne, userTwo);
     }
 
+    /**
+     * Проверка сравнения различных пользователей.
+     */
     @Test
     public void whenTwoDifferentThenEquals() {
         UserDTO userOne = new UserDTO("some_name", "some_tel");

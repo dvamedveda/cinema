@@ -7,14 +7,23 @@ import ru.job4j.cinema.model.HallDTO;
 import ru.job4j.cinema.model.Place;
 import ru.job4j.cinema.service.ServiceSettings;
 
+/**
+ * Тесты класса для работы с кинозалом персистентного слоя.
+ */
 public class HallDAOTest {
 
+    /**
+     * Подготовка базы данных для тестов.
+     */
     @BeforeClass
     public static void setUp() {
         DatabaseUpdater updater = new DatabaseUpdater(ServiceSettings.TEST_DB_FILE);
         updater.updateDatabase();
     }
 
+    /**
+     * Проверка наличия свободных мест в кинозале.
+     */
     @Test
     public void whenSearchPlaceThenSuccess() {
         Store store = PgStore.getInst(ServiceSettings.TEST_DB_FILE);
@@ -22,6 +31,9 @@ public class HallDAOTest {
         Assert.assertTrue(hallDAO.isHaveSpaces());
     }
 
+    /**
+     * Проверка свободности всех мест при создании кинозала.
+     */
     @Test
     public void whenGetPlacesThenAllEmplty() {
         Store store = PgStore.getInst(ServiceSettings.TEST_DB_FILE);
@@ -35,6 +47,9 @@ public class HallDAOTest {
         }
     }
 
+    /**
+     * Проверка сохранения всех мест кинозала.
+     */
     @Test
     public void whenSavePlacesThenSaveCorrect() {
         Store store = PgStore.getInst(ServiceSettings.TEST_DB_FILE);

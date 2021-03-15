@@ -13,16 +13,40 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Класс сервисного слоя для работы с кинозалом.
+ */
 public class HallService {
+
+    /**
+     * Логгер для вывода сообщений о работе приложения.
+     */
     private static final Logger LOGGER = LogManager.getLogger();
+
+    /**
+     * Объект персистентного слоя для сохранения и получения данных о кинозале.
+     */
     private final HallDAO hallDAO;
+
+    /**
+     * Объект содержащий состояние кинозала.
+     */
     private static HallDTO places;
 
+    /**
+     * Инициализация сервисного класса для работы с кинозалом.
+     *
+     * @param config используемая база данных.
+     */
     public HallService(String config) {
         hallDAO = new HallDAO(PgStore.getInst(config));
         refreshPlaces();
     }
 
+    /**
+     * Загрузить состояние кинозала из базы данных.
+     * Выполняется единожды при загрузке класса.
+     */
     private void refreshPlaces() {
         if (places == null) {
             places = this.hallDAO.getPlaces();
@@ -30,29 +54,26 @@ public class HallService {
         }
     }
 
+    /**
+     * Проверить - забронировано ли место.
+     *
+     * @param x ряд в кинозале.
+     * @param y место в ряду в кинозале.
+     * @return забронировано или нет.
+     */
     public boolean isReserved(int x, int y) {
         Place place = places.getPlace(x, y);
         return place.isReserved();
     }
 
-    public boolean isChecked(int x, int y) {
-        Place place = places.getPlace(x, y);
-        return place.isChecked();
-    }
-
-    public boolean checkPlace(int x, int y) {
-        boolean result = false;
-        Place place = places.getPlace(x, y);
-        if (!place.isChecked() && !place.isReserved()) {
-            place.setChecked(true);
-            places.updatePlace(place);
-            result = true;
-        } else {
-            LOGGER.info("Cannot check this place - is checked or reserved!");
-        }
-        return result;
-    }
-
+    /**
+     * Забронировать конкретное место за конкретным пользователем.
+     *
+     * @param x  ряд в кинозале.
+     * @param y  место в ряду.
+     * @param id кем бронируется.
+     * @return удалось ли забронировать.
+     */
     public boolean reservePlace(int x, int y, int id) {
         boolean result = false;
         Place place = places.getPlace(x, y);
@@ -66,19 +87,29 @@ public class HallService {
         return result;
     }
 
+    /**
+     * Освободить места, забронированные пользователем.
+     *
+     * @param id идентификатор пользователя.
+     */
     public void unreservePlaces(int id) {
         List<Place> placeList = Arrays.stream(places.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
         for (Place next : placeList) {
             Place current = places.getPlace(next.getX() - 1, next.getY() - 1);
             if (current.getReservedBy() == id) {
-                    current.setReservedBy(0);
-                    current.setReserved(false);
-                    places.updatePlace(current);
-                }
+                current.setReservedBy(0);
+                current.setReserved(false);
+                places.updatePlace(current);
+            }
         }
         hallDAO.savePlaces(places);
     }
 
+    /**
+     * Получить массив всех мест в кинозале.
+     *
+     * @return строка в формате JSON.
+     */
     public String getPlacesAsJson() {
         ObjectMapper mapper = new ObjectMapper();
         String result = "";

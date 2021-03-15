@@ -1,8 +1,9 @@
+-- Обновление, заполняющее таблицу кинозала пустыми местами.
+
 insert
-  into hall
-      (row, col, reserved)
-values
-       (1, 1, false),
+into hall
+    (row, col, reserved)
+values (1, 1, false),
        (1, 2, false),
        (1, 3, false),
        (1, 4, false),

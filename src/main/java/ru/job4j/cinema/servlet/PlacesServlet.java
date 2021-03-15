@@ -11,10 +11,27 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * Класс контроллера для обработки AJAX запроса на получение состояния мест кинозала.
+ */
 public class PlacesServlet extends HttpServlet {
+
+    /**
+     * Объект сервисного слоя для работы с кинозалом.
+     */
     private static HallService service = new HallService(ServiceSettings.DB_FILE);
+
+    /**
+     * Логгер для вывода информации о работе приложения.
+     */
     private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * Обработка запроса на получение состояния мест кинозала.
+     *
+     * @param req  объект запроса.
+     * @param resp объект ответа.
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) {
         resp.setContentType("text/json");
@@ -22,6 +39,7 @@ public class PlacesServlet extends HttpServlet {
         String placesAsJson = service.getPlacesAsJson();
         try (PrintWriter out = resp.getWriter()) {
             out.println(placesAsJson);
+            out.flush();
         } catch (IOException e) {
             LOGGER.warn(e, e);
         }

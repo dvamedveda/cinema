@@ -10,21 +10,46 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Map;
 
+/**
+ * Контроллер страницы оплаты забронированного места.
+ */
 public class PaymentServlet extends HttpServlet {
+
+    /**
+     * Объект сервисного слоя для работы с пользователем.
+     */
     private static UserService service = new UserService(ServiceSettings.DB_FILE);
+
+    /**
+     * Логгер для вывода информации о работе приложения.
+     */
     private static final Logger LOGGER = LogManager.getLogger();
 
+    /**
+     * Отдать представление для оплаты забронированного места.
+     *
+     * @param req  объект запроса.
+     * @param resp объект ответа.
+     * @throws ServletException исключения при работе сервлета.
+     * @throws IOException      исключения ввода и вывода при работе сервлета.
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.getRequestDispatcher("/WEB-INF/views/payment.jsp").forward(req, resp);
     }
 
+    /**
+     * Обработка запроса на оплату забронированного места.
+     * После обработки клиент перенаправляется на главную страницу.
+     * Если обработка не завершилась бронированием - перенаправление происходит с добавлением параметра ошибки.
+     *
+     * @param req  объект запроса.
+     * @param resp объект ответа.
+     * @throws IOException исключения ввода и вывода при работе сервлета.
+     */
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         req.setCharacterEncoding("UTF-8");
         String name = req.getParameter("username");
         String tel = req.getParameter("phone");

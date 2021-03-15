@@ -1,8 +1,19 @@
+/**
+ * Константа, определяющая период
+ * автоматического обновления
+ * состояния мест кинозала на странице.
+ * @type {number}
+ */
 const REFRESH_DELAY = 30000;
+
 $(document).ready(getPlaces);
 $(document).ready(autoRefresh);
 $(document).ready(checkFailed)
 
+/**
+ * Функция обновления состояния мест в кинозале
+ * при помощи AJAX запроса.
+ */
 function getPlaces() {
     $.ajax({
         type: 'GET',
@@ -37,15 +48,25 @@ function getPlaces() {
     })
 }
 
+/**
+ * Функция с рекурсивным setTimeout
+ * для обновления состояния мест в кинозале.
+ */
 function refresh() {
     getPlaces();
     setTimeout(refresh, REFRESH_DELAY);
 }
 
+/**
+ * Запуск автоматического обновления состояния мест кинозала.
+ */
 function autoRefresh() {
     setTimeout(refresh, REFRESH_DELAY);
 }
 
+/**
+ * Обработка клика на переход к оплате с главной страницы.
+ */
 $("#submit_hall_places").click(
     function (event) {
         if ($('input[name="place"]:checked').length == 0) {
@@ -57,6 +78,9 @@ $("#submit_hall_places").click(
     }
 );
 
+/**
+ * Показ ошибки, в случае перенаправления с ошибкой после обработки оплаты.
+ */
 function checkFailed() {
     if (getURLParameter("result") == "failed") {
         if (!$.contains(document.querySelector('#main_row'), document.querySelector('#main_row > .alert'))) {
@@ -68,6 +92,11 @@ function checkFailed() {
     }
 }
 
+/**
+ * Вспомогательная функция для получения значения параметра из строки запроса.
+ * @param sParam имя параметра.
+ * @returns {boolean|*} значение параметра.
+ */
 function getURLParameter(sParam) {
     let sPageURL = window.location.search.substring(1);
     let sURLVariables = sPageURL.split('&');

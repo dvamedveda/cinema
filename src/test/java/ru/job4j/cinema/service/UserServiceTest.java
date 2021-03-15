@@ -5,13 +5,23 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import ru.job4j.cinema.store.DatabaseUpdater;
 
+/**
+ * Тесты класса UserService.
+ */
 public class UserServiceTest {
+
+    /**
+     * Подготовка базы данных для тестов.
+     */
     @BeforeClass
     public static void setUp() {
         DatabaseUpdater databaseUpdater = new DatabaseUpdater(ServiceSettings.TEST_DB_FILE);
         databaseUpdater.updateDatabase();
     }
 
+    /**
+     * Проверка оплаты и резервирования места пользователем в кинозале.
+     */
     @Test
     public void whenDoPaymentThenCorrect() {
         String userName = "some_user";

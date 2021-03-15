@@ -1,41 +1,44 @@
 <!DOCTYPE web-app PUBLIC
- "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
- "http://java.sun.com/dtd/web-app_2_3.dtd" >
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Archetype Created Web Application</display-name>
+    <display-name>Archetype Created Web Application</display-name>
 
-  <listener>
-    <listener-class>ru.job4j.cinema.listener.DatabasePreparationListener</listener-class>
-  </listener>
+    <!-- Слушатели -->
+    <listener>
+        <listener-class>ru.job4j.cinema.listener.DatabasePreparationListener</listener-class>
+    </listener>
 
-  <servlet>
-    <servlet-name>PlacesServlet</servlet-name>
-    <servlet-class>ru.job4j.cinema.servlet.PlacesServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>IndexServlet</servlet-name>
-    <servlet-class>ru.job4j.cinema.servlet.IndexServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>PaymentServlet</servlet-name>
-    <servlet-class>ru.job4j.cinema.servlet.PaymentServlet</servlet-class>
-  </servlet>
+    <!-- Классы сервлетов -->
+    <servlet>
+        <servlet-name>PlacesServlet</servlet-name>
+        <servlet-class>ru.job4j.cinema.servlet.PlacesServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>IndexServlet</servlet-name>
+        <servlet-class>ru.job4j.cinema.servlet.IndexServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PaymentServlet</servlet-name>
+        <servlet-class>ru.job4j.cinema.servlet.PaymentServlet</servlet-class>
+    </servlet>
 
-  <servlet-mapping>
-    <servlet-name>PlacesServlet</servlet-name>
-    <url-pattern>/ajax/places.do</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>IndexServlet</servlet-name>
-    <url-pattern>/index.do</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>IndexServlet</servlet-name>
-    <url-pattern>/index.jsp</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>PaymentServlet</servlet-name>
-    <url-pattern>/payment.do</url-pattern>
-  </servlet-mapping>
+    <!-- Маппинг сервлетов. -->
+    <servlet-mapping>
+        <servlet-name>PlacesServlet</servlet-name>
+        <url-pattern>/ajax/places.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>IndexServlet</servlet-name>
+        <url-pattern>/index.do</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>IndexServlet</servlet-name>
+        <url-pattern>/index.jsp</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PaymentServlet</servlet-name>
+        <url-pattern>/payment.do</url-pattern>
+    </servlet-mapping>
 </web-app>
