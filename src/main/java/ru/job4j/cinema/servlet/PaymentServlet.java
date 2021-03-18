@@ -2,6 +2,7 @@ package ru.job4j.cinema.servlet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.job4j.cinema.service.MainService;
 import ru.job4j.cinema.service.ServiceSettings;
 import ru.job4j.cinema.service.UserService;
 
@@ -19,7 +20,7 @@ public class PaymentServlet extends HttpServlet {
     /**
      * Объект сервисного слоя для работы с пользователем.
      */
-    private static UserService service = new UserService(ServiceSettings.DB_FILE);
+    private final UserService service = MainService.getInstance(ServiceSettings.DB_FILE).getUserService();
 
     /**
      * Логгер для вывода информации о работе приложения.

@@ -20,13 +20,13 @@ public class UserService {
     private final HallService hallService;
 
     /**
-     * Инициализация сервисного класса.
-     *
-     * @param config конфиг используемой базы данных.
+     * Инициализация сервисного класса пользователей.
+     * @param config файл конфигурации базы данных.
+     * @param hallService объект сервиса кинозала, данные которого используются.
      */
-    public UserService(String config) {
+    public UserService(String config, HallService hallService) {
         userDAO = new UserDAO(PgStore.getInst(config));
-        hallService = new HallService(config);
+        this.hallService = hallService;
     }
 
     /**

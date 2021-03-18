@@ -26,8 +26,9 @@ public class UserServiceTest {
     public void whenDoPaymentThenCorrect() {
         String userName = "some_user";
         String userTel = "some_tel";
-        UserService userService = new UserService(ServiceSettings.TEST_DB_FILE);
-        HallService hallService = new HallService(ServiceSettings.TEST_DB_FILE);
+        MainService mainService = MainService.getInstance(ServiceSettings.TEST_DB_FILE);
+        UserService userService = mainService.getUserService();
+        HallService hallService = mainService.getHallService();
         userService.doPayment(userName, userTel, 2, 2);
         Assert.assertTrue(hallService.isReserved(2, 2));
         userService.removeUser(userTel);

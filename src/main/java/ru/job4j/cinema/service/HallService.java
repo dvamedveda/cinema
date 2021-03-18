@@ -31,7 +31,7 @@ public class HallService {
     /**
      * Объект содержащий состояние кинозала.
      */
-    private static HallDTO places;
+    private final HallDTO places;
 
     /**
      * Инициализация сервисного класса для работы с кинозалом.
@@ -40,18 +40,7 @@ public class HallService {
      */
     public HallService(String config) {
         hallDAO = new HallDAO(PgStore.getInst(config));
-        refreshPlaces();
-    }
-
-    /**
-     * Загрузить состояние кинозала из базы данных.
-     * Выполняется единожды при загрузке класса.
-     */
-    private void refreshPlaces() {
-        if (places == null) {
-            places = this.hallDAO.getPlaces();
-            LOGGER.info("Places updated in service.");
-        }
+        places = this.hallDAO.getPlaces();
     }
 
     /**
@@ -76,13 +65,15 @@ public class HallService {
      */
     public boolean reservePlace(int x, int y, int id) {
         boolean result = false;
-        Place place = places.getPlace(x, y);
-        if (!place.isReserved()) {
-            place.setReserved(true);
-            place.setReservedBy(id);
-            places.updatePlace(place);
-            hallDAO.savePlaces(places);
-            result = true;
+        synchronized (HallService.class) {
+            Place place = places.getPlace(x, y);
+            if (!place.isReserved()) {
+                place.setReserved(true);
+                place.setReservedBy(id);
+                places.updatePlace(place);
+                hallDAO.savePlaces(places);
+                result = true;
+            }
         }
         return result;
     }
@@ -93,16 +84,18 @@ public class HallService {
      * @param id идентификатор пользователя.
      */
     public void unreservePlaces(int id) {
-        List<Place> placeList = Arrays.stream(places.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
-        for (Place next : placeList) {
-            Place current = places.getPlace(next.getX() - 1, next.getY() - 1);
-            if (current.getReservedBy() == id) {
-                current.setReservedBy(0);
-                current.setReserved(false);
-                places.updatePlace(current);
+        synchronized (HallService.class) {
+            List<Place> placeList = Arrays.stream(places.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
+            for (Place next : placeList) {
+                Place current = places.getPlace(next.getX() - 1, next.getY() - 1);
+                if (current.getReservedBy() == id) {
+                    current.setReservedBy(0);
+                    current.setReserved(false);
+                    places.updatePlace(current);
+                }
             }
+            hallDAO.savePlaces(places);
         }
-        hallDAO.savePlaces(places);
     }
 
     /**

@@ -28,7 +28,8 @@ public class HallServiceTest {
      */
     @Test
     public void whenCreateHallServiceThenAllNotReserved() {
-        HallService hallService = new HallService(ServiceSettings.TEST_DB_FILE);
+        MainService mainService = MainService.getInstance(ServiceSettings.TEST_DB_FILE);
+        HallService hallService = mainService.getHallService();
         for (int x = 0; x < 5; x++) {
             for (int y = 0; y < 5; y++) {
                 Assert.assertFalse(hallService.isReserved(x, y));
@@ -41,8 +42,9 @@ public class HallServiceTest {
      */
     @Test
     public void whenReserveThenSuccess() {
-        HallService hallService = new HallService(ServiceSettings.TEST_DB_FILE);
-        UserService userService = new UserService(ServiceSettings.TEST_DB_FILE);
+        MainService mainService = MainService.getInstance(ServiceSettings.TEST_DB_FILE);
+        HallService hallService = mainService.getHallService();
+        UserService userService = mainService.getUserService();
         UserDTO user = userService.prepareUser("tester", "testers_tel");
         hallService.reservePlace(3, 3, user.getId());
         Assert.assertTrue(hallService.isReserved(3, 3));
@@ -55,7 +57,8 @@ public class HallServiceTest {
      */
     @Test
     public void whenGetJsonAndAllEmptyThenCorrect() {
-        HallService hallService = new HallService(ServiceSettings.TEST_DB_FILE);
+        MainService mainService = MainService.getInstance(ServiceSettings.TEST_DB_FILE);
+        HallService hallService = mainService.getHallService();
         String result = hallService.getPlacesAsJson();
         String expected = emptyHallJson();
         Assert.assertThat(result, is(expected));
@@ -66,8 +69,9 @@ public class HallServiceTest {
      */
     @Test
     public void whenGetJsonAndReservedThenCorrect() {
-        HallService hallService = new HallService(ServiceSettings.TEST_DB_FILE);
-        UserService userService = new UserService(ServiceSettings.TEST_DB_FILE);
+        MainService mainService = MainService.getInstance(ServiceSettings.TEST_DB_FILE);
+        HallService hallService = mainService.getHallService();
+        UserService userService = mainService.getUserService();
         UserDTO user = userService.prepareUser("second_tester", "second_testers_tel");
         hallService.reservePlace(1, 1, user.getId());
         String resultReserved = hallService.getPlacesAsJson();

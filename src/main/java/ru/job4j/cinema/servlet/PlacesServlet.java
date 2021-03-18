@@ -3,6 +3,7 @@ package ru.job4j.cinema.servlet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.job4j.cinema.service.HallService;
+import ru.job4j.cinema.service.MainService;
 import ru.job4j.cinema.service.ServiceSettings;
 
 import javax.servlet.http.HttpServlet;
@@ -19,7 +20,7 @@ public class PlacesServlet extends HttpServlet {
     /**
      * Объект сервисного слоя для работы с кинозалом.
      */
-    private static HallService service = new HallService(ServiceSettings.DB_FILE);
+    private final HallService service = MainService.getInstance(ServiceSettings.DB_FILE).getHallService();
 
     /**
      * Логгер для вывода информации о работе приложения.
