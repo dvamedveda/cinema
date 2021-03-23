@@ -16,6 +16,11 @@ public class HallDTO {
      * @param places двумерный массив мест кинотеатра.
      */
     public HallDTO(Place[][] places) {
+        for (int row = 0; row < places.length; row++) {
+            for (int col = 0; col < places[row].length; col++) {
+                places[row][col] = new Place(row + 1, col + 1);
+            }
+        }
         this.placeList = places;
     }
 

@@ -2,16 +2,11 @@ package ru.job4j.cinema.store;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.job4j.cinema.model.HallDTO;
 import ru.job4j.cinema.model.Place;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Arrays;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Класс, реализующий взаимодействия приложения с кинозалом в базе данных.
@@ -40,10 +35,10 @@ public class HallDAO {
     /**
      * Загрузить из базы данных состояние всех мест в кинозале.
      *
-     * @return модель данных кинозала.
+     * @return список занятых мест кинозала.
      */
-    public HallDTO getPlaces() {
-        Place[][] array = new Place[this.getMaxRow()][this.getMaxCol()];
+    public List<Place> getReservedPlaces() {
+        List<Place> result = new ArrayList<>();
         String command = "select * from hall;";
         try (Connection connection = store.getConnection()) {
             try (PreparedStatement preparedStatement = connection.prepareStatement(command)) {
@@ -57,7 +52,7 @@ public class HallDAO {
                         nextPlace.setReserved(isReserved);
                         int reservedBy = resultSet.getInt("reserved_by");
                         nextPlace.setReservedBy(reservedBy);
-                        array[x - 1][y - 1] = nextPlace;
+                        result.add(nextPlace);
                     }
                 }
             }
@@ -65,101 +60,44 @@ public class HallDAO {
         } catch (SQLException e) {
             LOGGER.warn(e, e);
         }
-        return new HallDTO(array);
+        return result;
     }
 
     /**
-     * Сохранить в базу данных состояние всех мест в кинозале.
-     *
-     * @param hall модель данных кинозала.
+     * Сохранить место в базе данных.
+     * @param place модель места кинозала.
+     * @throws SQLIntegrityConstraintViolationException бросается одному из потоков в случае одновременного бронирования.
      */
-    public void savePlaces(HallDTO hall) {
-        String command = "update hall set reserved = ?, reserved_by = ? where row = ? and col = ?;";
+    public void savePlace(Place place) throws SQLIntegrityConstraintViolationException {
+        String command = "insert into hall(row, col, reserved, reserved_by) values (?, ?, ?, ?)";
         try (Connection connection = store.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(command)) {
-                List<Place> placeList = Arrays.stream(hall.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
-                for (Place next : placeList) {
-                    statement.setBoolean(1, next.isReserved());
-                    statement.setInt(2, next.getReservedBy());
-                    statement.setInt(3, next.getX());
-                    statement.setInt(4, next.getY());
-                    statement.addBatch();
-                }
-                statement.executeBatch();
+                statement.setInt(1, place.getX());
+                statement.setInt(2, place.getY());
+                statement.setBoolean(3, place.isReserved());
+                statement.setInt(4, place.getReservedBy());
+                statement.executeUpdate();
             }
+        } catch (SQLIntegrityConstraintViolationException e) {
+            throw new SQLIntegrityConstraintViolationException();
         } catch (SQLException e) {
             LOGGER.warn(e, e);
         }
     }
 
     /**
-     * Проверить, есть ли в кинозале свободные места.
-     *
-     * @return да или нет.
+     * Освободить места в кинозале, занятые определенным пользователем.
+     * @param id идентификатор пользователя.
      */
-    public boolean isHaveSpaces() {
-        String command = "select * from hall where reserved = false;";
-        boolean result = false;
-        try (Connection connection = store.getConnection();
-             PreparedStatement statement = connection.prepareStatement(command)) {
-            statement.execute();
-            try (ResultSet resultSet = statement.getResultSet()) {
-                if (resultSet.next()) {
-                    result = true;
-                }
-            }
-
-        } catch (SQLException e) {
-            LOGGER.warn(e, e);
-        }
-        return result;
-    }
-
-    /**
-     * Вспомогательный метод для определения количества рядов в кинозале.
-     *
-     * @return количество рядов.
-     */
-    private int getMaxRow() {
-        int result = 0;
-        String getMaxRow = "select max(\"row\") from hall;";
+    public void unreservePlaces(int id) {
+        String command = "delete from hall where reserved_by = ?;";
         try (Connection connection = store.getConnection()) {
-            try (PreparedStatement getRow = connection.prepareStatement(getMaxRow)) {
-                getRow.execute();
-                try (ResultSet rowResult = getRow.getResultSet()) {
-                    while (rowResult.next()) {
-                        result = rowResult.getInt("max");
-                    }
-                }
+            try (PreparedStatement statement = connection.prepareStatement(command)) {
+                statement.setInt(1, id);
+                statement.executeUpdate();
             }
-
         } catch (SQLException e) {
             LOGGER.warn(e, e);
         }
-        return result;
-    }
-
-    /**
-     * Вспомогательный метод для определения количества мест в ряду в кинозале.
-     *
-     * @return количество мест.
-     */
-    private int getMaxCol() {
-        int result = 0;
-        String getMaxCol = "select max(\"col\") from hall;";
-        try (Connection connection = store.getConnection()) {
-            try (PreparedStatement getCol = connection.prepareStatement(getMaxCol)) {
-                getCol.execute();
-                try (ResultSet colResult = getCol.getResultSet()) {
-                    while (colResult.next()) {
-                        result = colResult.getInt("max");
-                    }
-                }
-            }
-
-        } catch (SQLException e) {
-            LOGGER.warn(e, e);
-        }
-        return result;
     }
 }

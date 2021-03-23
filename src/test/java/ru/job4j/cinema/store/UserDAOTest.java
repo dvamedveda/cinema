@@ -28,10 +28,12 @@ public class UserDAOTest {
     @Test
     public void whenGetExistUserThenSuccess() {
         UserDAO userDAO = new UserDAO(PgStore.getInst(ServiceSettings.TEST_DB_FILE));
+        UserDTO existUser = userDAO.saveUser(new UserDTO("default_user", "default_tel"));
         UserDTO user = userDAO.getUser("default_tel");
-        Assert.assertThat(user.getId(), is(0));
+        Assert.assertThat(user.getId(), is(existUser.getId()));
         Assert.assertThat(user.getName(), is("default_user"));
         Assert.assertThat(user.getTelNumber(), is("default_tel"));
+        userDAO.deleteUser(existUser.getId());
     }
 
     /**

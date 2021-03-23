@@ -7,7 +7,3 @@ create table account
     name       text,
     tel_number text
 );
-
--- Создание пользователя по умолчанию.
-insert into account(id, name, tel_number)
-values (0, 'default_user', 'default_tel')

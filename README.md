@@ -16,7 +16,7 @@ It used DAO/DTO, Singleton templates.
 
 - user can book seat for self, doing payment and leave he own name and telephone number;  
 - application supports automatic refreshing state of hall of cinema for other users;  
-- user can not book chosen seat, is this seat has been booked by other user early;
+- user can not book chosen seat, if this seat has been booked by other user early;
 - web app supports validation for entered user data;
 - web app automatically update/check database state on startup.
 

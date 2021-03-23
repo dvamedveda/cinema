@@ -9,6 +9,7 @@ import ru.job4j.cinema.model.Place;
 import ru.job4j.cinema.store.HallDAO;
 import ru.job4j.cinema.store.PgStore;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +32,7 @@ public class HallService {
     /**
      * Объект содержащий состояние кинозала.
      */
-    private final HallDTO places;
+    private final HallDTO places = new HallDTO(new Place[5][5]);
 
     /**
      * Инициализация сервисного класса для работы с кинозалом.
@@ -40,7 +41,16 @@ public class HallService {
      */
     public HallService(String config) {
         hallDAO = new HallDAO(PgStore.getInst(config));
-        places = this.hallDAO.getPlaces();
+        refreshPlaces();
+    }
+
+    /**
+     * Метод для считывания состояния кинозала из БД в модель кинозала.
+     */
+    public void refreshPlaces() {
+        for (Place place : this.hallDAO.getReservedPlaces()) {
+            places.updatePlace(place);
+        }
     }
 
     /**
@@ -64,15 +74,16 @@ public class HallService {
      * @return удалось ли забронировать.
      */
     public boolean reservePlace(int x, int y, int id) {
-        boolean result = false;
-        synchronized (HallService.class) {
-            Place place = places.getPlace(x, y);
-            if (!place.isReserved()) {
-                place.setReserved(true);
-                place.setReservedBy(id);
-                places.updatePlace(place);
-                hallDAO.savePlaces(places);
-                result = true;
+        boolean result = true;
+        Place place = places.getPlace(x, y);
+        if (!place.isReserved()) {
+            place.setReserved(true);
+            place.setReservedBy(id);
+            places.updatePlace(place);
+            try {
+                hallDAO.savePlace(place);
+            } catch (SQLIntegrityConstraintViolationException e) {
+                result = false;
             }
         }
         return result;
@@ -84,18 +95,16 @@ public class HallService {
      * @param id идентификатор пользователя.
      */
     public void unreservePlaces(int id) {
-        synchronized (HallService.class) {
-            List<Place> placeList = Arrays.stream(places.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
-            for (Place next : placeList) {
-                Place current = places.getPlace(next.getX() - 1, next.getY() - 1);
-                if (current.getReservedBy() == id) {
-                    current.setReservedBy(0);
-                    current.setReserved(false);
-                    places.updatePlace(current);
-                }
+        List<Place> placeList = Arrays.stream(places.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
+        for (Place next : placeList) {
+            Place current = places.getPlace(next.getX() - 1, next.getY() - 1);
+            if (current.getReservedBy() == id) {
+                current.setReservedBy(0);
+                current.setReserved(false);
+                places.updatePlace(current);
             }
-            hallDAO.savePlaces(places);
         }
+        hallDAO.unreservePlaces(id);
     }
 
     /**
@@ -111,6 +120,23 @@ public class HallService {
             result = mapper.writeValueAsString(placeList);
         } catch (JsonProcessingException e) {
             LOGGER.warn(e, e);
+        }
+        return result;
+    }
+
+    /**
+     * Проверить, есть ли в кинозале свободные места.
+     *
+     * @return да или нет.
+     */
+    public boolean isHavePlaces() {
+        boolean result = false;
+        List<Place> placeList = Arrays.stream(places.getPlaceArray()).flatMap(Arrays::stream).collect(Collectors.toList());
+        for (Place place : placeList) {
+            if (!place.isReserved()) {
+                result = true;
+                break;
+            }
         }
         return result;
     }

@@ -147,4 +147,14 @@ public class HallServiceTest {
                 .append("]")
                 .toString();
     }
+
+    /**
+     * Проверка наличия свободных мест в кинозале.
+     */
+    @Test
+    public void whenSearchPlaceThenSuccess() {
+        MainService mainService = MainService.getInstance(ServiceSettings.TEST_DB_FILE);
+        HallService hallService = mainService.getHallService();
+        Assert.assertTrue(hallService.isHavePlaces());
+    }
 }

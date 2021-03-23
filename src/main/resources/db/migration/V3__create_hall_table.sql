@@ -3,8 +3,9 @@
 create table hall
 (
     id          serial primary key,
-    row         integer,
-    col         integer,
-    reserved    boolean,
-    reserved_by integer references account (id) default 0
+    row         integer not null,
+    col         integer not null,
+    reserved    boolean not null,
+    reserved_by integer references account (id),
+    constraint check_place unique (row, col)
 )
