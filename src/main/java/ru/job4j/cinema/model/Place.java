@@ -17,7 +17,7 @@ public class Place {
     /**
      * Признак, забронировано ли место.
      */
-    private volatile boolean reserved;
+    private boolean reserved;
 
     /**
      * Идентификатор пользователя, кем забронировано место.

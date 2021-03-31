@@ -79,9 +79,9 @@ public class HallService {
         if (!place.isReserved()) {
             place.setReserved(true);
             place.setReservedBy(id);
-            places.updatePlace(place);
             try {
                 hallDAO.savePlace(place);
+                places.updatePlace(place);
             } catch (SQLIntegrityConstraintViolationException e) {
                 result = false;
             }

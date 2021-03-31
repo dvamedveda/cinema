@@ -8,7 +8,7 @@ public class HallDTO {
     /**
      * Двумерный массив мест кинотеатра.
      */
-    private volatile Place[][] placeList;
+    private Place[][] placeList;
 
     /**
      * Конструктор модели.
@@ -32,7 +32,11 @@ public class HallDTO {
      * @return объект места.
      */
     public Place getPlace(int x, int y) {
-        return placeList[x][y];
+        Place place = placeList[x][y];
+        Place result = new Place(place.getX(), place.getY());
+        result.setReserved(place.isReserved());
+        result.setReservedBy(place.getReservedBy());
+        return result;
     }
 
     /**
